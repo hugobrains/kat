@@ -1,0 +1,36 @@
+// author:
+// Felix Angell <mail@felixangell.com>
+
+// The first ever krug program: 'kat'
+// it reads a file and prints it 
+// to stdout.
+//
+// usage:
+// kat [file]
+
+fn main() int {
+    if arg_count != 2 {
+        fprintf(stderr, "not enough arguments!");
+        return -1;
+    }
+
+    let filePath *char = arguments[1];
+
+    let fhandle *FILE = fopen(filePath, "r");
+    defer fclose(fhandle);
+    if (!fhandle) {
+        return -1;
+    }
+
+    fseek(fhandle, 0, SEEK_END);
+    let length u64 = ftell(fhandle);
+    rewind(fhandle);
+
+    let fileData *char = alloc!(char, length);
+    defer free!fileData;
+    fread(fileData, sizeof!char, length, fhandle);
+
+    printf("%s\n", fileData);
+
+    return 0;
+}
